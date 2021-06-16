@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>Hello guys Let's learn how to do CRUD Operation In MongoDB</h1>
+    <div class="col-md-8 m-auto p-3">
+        <form action="addproduct" method="POST">
+            <input type="text" name="name" id="" placeholder="Enter Your Name" class="form-control mt-2" />
+            <input type="text" name="id" placeholder="Enter your ID"  class="form-control mt-2" />
+            <input type="text" name="Department" placeholder="Enter Your department" class="form-control mt-2" />
+            <button class="mt-4 btn btn-danger" type="submit">Add Student</button>
+        </form>
+    </div>
+    <div id="students" class="text-center">
+
+    </div>
+
+    <div id="update" class="col-md-8 m-auto ">
+
+    </div>
+
+
+
+
+    <script>
+        function loadAllData(){
+            fetch('/students')
+            .then(res=> res.json())
+            .then(data=>{
+                //console.log(data);
+                const studentDiv = document.getElementById('students')
+                data.forEach(std => {
+                    const item = document.createElement('p');
+                    item.innerHTML = `
+                    Name:<b>${std.name}</b> Id:${std.id} Department: ${std.Department} <br/>
+                    <button class= "btn btn-warning mt-3 mb-3" onclick='deleteStudent("${std._id}")'>Delete Student</button>
+                    <button class ="btn btn-dark ml-3 mt-3 mb-3" onclick = 'loadData("${std._id}")'>Update Student</button>
+                    `
+                    studentDiv.appendChild(item);
+                });
+            })
+        }
+        loadAllData();
+
+        function deleteStudent(id){
+            fetch(`/delete/${id}`,{
+                method:"DELETE"
+            })
+            .then(res=>res.json())
+            .then(data=>{
+                console.log('deleted Successfully');
+            })
+        }
+
+        function loadData(id){
+            fetch(`/student/${id}`)
+            .then(res => res.json())
+            .then(data=>{
+                console.log(data);
+                const updateDiv = document.getElementById('update');
+                update.innerHTML= `
+                   <h3 class='text-danger mt-4'>Update ${data.name} id and department</h3>
+                   <b>ID:</b><input type = "text" value = ${data.id} name="id" id ="id" class="form-control" />
+                   <br/>
+                   <b>Department</b><input type = "text" value = ${data.Department} name="department" id = "dept" class="form-control" />
+                   <br/>
+                   <button class="btn btn-outline-primary" onclick = 'updateStudent("${data._id}")'>Update Student Details</button>
+                `
+            })
+        }
+      
+        function updateStudent(id){
+            const studentId = document.getElementById('id').value;
+            const department = document.getElementById('dept').value;
+            const student = {id,studentId,department}
+            //console.log(student);
+            fetch(`/update/${id}`,{
+                method:'PATCH',
+                headers:{
+                    "Content-type" : "application/json"
+                },
+                body:JSON.stringify(student)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+        }
+
+    
+    </script>
+</body>
+</html>
